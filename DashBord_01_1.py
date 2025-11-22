@@ -226,8 +226,8 @@ def draw_all_stocks_page():
         # --- S3からCSVファイルを読み込む ---
         # S3のバケット名とファイル名を指定
         # 必要に応じてst.secretsなどから取得するように変更してください
-        bucket_name = "your-s3-bucket-name"  # ★★★ ご自身のS3バケット名に変更してください
-        file_key = "path/to/your/jpx400.csv" # ★★★ S3上のファイルパスに変更してください
+        bucket_name = "swing-trade-data"  # ★★★ ご自身のS3バケット名に変更してください
+        file_key = "jpx400.csv" # ★★★ S3上のファイルパスに変更してください
 
         s3_path = f"s3://{bucket_name}/{file_key}"
 
