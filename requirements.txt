@@ -3,4 +3,4 @@ pandas
 yfinance
 plotly
 boto3
-s3fs
+s3fs>=2023.6.0
