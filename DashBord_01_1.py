@@ -220,23 +220,32 @@ def draw_all_stocks_page():
     selected_monthly_flag_value = flag_options[selected_monthly_flag_label]
     selected_daily_flag_value = flag_options[selected_daily_flag_label]
 
-    # --- データベースからデータを読み込み ---
+    # --- 設定（ここをあなたの環境に合わせて変更してください） ---
+    S3_BUCKET = 'swing-trade-data'                     # S3バケット名
+    S3_KEY = 'jpx400.csv'                            # S3オブジェクトキー（ファイルパス）
+    # AWS_REGION = 'ap-northeast-1'                         # S3バケットのリージョン (例: 東京リージョン)
+    # -----------------------------------------------------------
+
     try:
-        # --- S3からCSVファイルを読み込む ---
-        # S3のバケット名とファイル名を指定
-        # 必要に応じてst.secretsなどから取得するように変更してください
-        bucket_name = "swing-trade-data"  # ★★★ ご自身のS3バケット名に変更してください
-        file_key = "jpx400.csv" # ★★★ S3上のファイルパスに変更してください
+        # 1. boto3クライアントを初期化
+        # Streamlit Community Cloudのsecretsを使用して認証情報を安全に取得します。
+        s3_client = boto3.client(
+            's3',
+            aws_access_key_id=st.secrets.aws.AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=st.secrets.aws.AWS_SECRET_ACCESS_KEY
+            # region_name=AWS_REGION
+        )
 
-        s3_path = f"s3://{bucket_name}/{file_key}"
+        # 2. S3からファイルを取得
+        response = s3_client.get_object(Bucket=S3_BUCKET, Key=S3_KEY)
 
-        # PandasでS3から直接CSVを読み込む
-        # 認証情報は環境変数や ~/.aws/credentials から自動で読み込まれます
-        df_all = pd.read_csv(s3_path)
-        st.caption(f"`{s3_path}` から読み込んだデータです。")
+        # 3. ファイル内容をデコード
+        # ファイルの内容はバイト型で返されるため、'utf-8'で文字列にデコードします
+        csv_body = response['Body'].read().decode('utf-8')
+        data = StringIO(csv_body)
 
         # --- データの加工と表示 ---
-        df_display = df_all.copy()
+        df_display = pd.read_csv(data)
 
         # 1. フィルタリング
         # 月足フラグでの絞り込み
