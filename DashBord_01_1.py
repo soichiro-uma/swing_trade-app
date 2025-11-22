@@ -2,8 +2,8 @@ import yfinance as yf
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-import sqlite3
-import os
+import boto3
+from io import StringIO
 import streamlit as st
 st.write(f"実行中のStreamlitバージョン: {st.__version__}") # この行を追加
 
@@ -197,8 +197,7 @@ def draw_individual_stock_page(stocks_df):
 def draw_all_stocks_page():
     """【上段】全銘柄分析結果の描画を行う"""
     st.header("全銘柄分析結果")
-    st.caption("`stock_new.db` から読み込んだデータです。")
-
+    
     # --- メインパネルでのフィルタ設定 ---
     with st.expander("表示フィルタ", expanded=True):
         col1, col2 = st.columns(2)
